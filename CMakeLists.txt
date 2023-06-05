@@ -30,7 +30,7 @@ FetchContent_MakeAvailable(Catch2)
 
 enable_testing()
 
-add_subdirectory(structured_binding)
+add_subdirectory(structured-bindings)
 add_subdirectory(ifs)
 add_subdirectory(small-features)
 add_subdirectory(ctad)
