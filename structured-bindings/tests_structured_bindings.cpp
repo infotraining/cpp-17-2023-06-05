@@ -25,18 +25,38 @@ namespace BeforeCpp17
     }
 }
 
-tuple<int, int, double> calc_stats(const vector<int>& data)
+// namespace Custom
+// {
+//     class SmartContainer
+//     {};
+
+//     Iterator begin(SmartContainer&);
+//     Iterator end(SmartContainer&);
+// };
+
+
+
+template <typename TContainer>
+std::tuple<int, int, double> calc_stats(const TContainer& data)
 {
-    auto [min_pos, max_pos] = minmax_element(data.begin(), data.end()); // sb
+    using std::begin;
+    using std::end;
+    using std::empty;
+    using std::size;
 
-    double avg = accumulate(data.begin(), data.end(), 0.0) / data.size();
+    if (empty(data))
+        return {0, 0, 0.0};
 
-    return make_tuple(*min_pos, *max_pos, avg);
+    auto [min_pos, max_pos] = minmax_element(begin(data), end(data)); // sb 
+
+    double avg = accumulate(begin(data), end(data), 0.0) / size(data);
+
+    return {*min_pos, *max_pos, avg};
 }
 
 TEST_CASE("Before C++17")
 {
-    vector<int> data = {4, 42, 665, 1, 123, 13};
+    int data[] = {4, 42, 665, 1, 123, 13};
 
     int min, max;
     // double avg;
@@ -155,7 +175,7 @@ TEST_CASE("sb - move semantics")
     {
         ErrorCode ec = open_file("");
 
-        auto [error_code, error_message] = std::move(ec); 
+        auto [error_code, error_message] = std::move(ec);
 
         CHECK(ec.m == ""s);
         CHECK(error_message != ""s);
@@ -165,7 +185,7 @@ TEST_CASE("sb - move semantics")
     {
         ErrorCode ec = open_file("");
 
-        auto& [error_code, error_message] = ec; 
+        auto& [error_code, error_message] = ec;
 
         std::string target = std::move(error_message);
     }
@@ -175,17 +195,17 @@ TEST_CASE("use case")
 {
     std::map<int, std::string> dict = {{1, "one"}, {2, "two"}, {3, "three"}};
 
-    auto [pos, was_inserted] = dict.insert(std::pair{1, "jeden"});    
+    auto [pos, was_inserted] = dict.insert(std::pair{1, "jeden"});
     CHECK(was_inserted == false);
 
-    for(const auto& [key, value] : dict)
+    for (const auto& [key, value] : dict)
     {
         std::cout << key << " - " << value << "\n";
     }
 
     std::vector vec = {1543, 4, 543};
 
-    for(auto [it, index] = std::pair{vec.begin(), 0}; it != vec.end(); ++it, ++index)
+    for (auto [it, index] = std::pair{vec.begin(), 0}; it != vec.end(); ++it, ++index)
     {
         std::cout << index << " - " << *it << "\n";
     }
@@ -199,10 +219,14 @@ class Person
     std::string first_name_;
     std::string last_name_;
     int age_;
-    
+
 public:
-    Person(std::string fn, std::string ln, int age) : first_name_{std::move(fn)}, last_name_{std::move(ln)}, age_{age}
-    {}
+    Person(std::string fn, std::string ln, int age)
+        : first_name_{std::move(fn)}
+        , last_name_{std::move(ln)}
+        , age_{age}
+    {
+    }
 
     const std::string& first_name() const
     {
@@ -240,19 +264,25 @@ struct std::tuple_element<Index, Person>
 
 // step 3
 template <size_t Index>
-decltype(auto) get(const Person&);
-
-template <>
-decltype(auto) get<0>(const Person& p)
+decltype(auto) get(const Person& p)
 {
-    return p.first_name();
+    if constexpr(Index == 0)
+        return p.first_name();
+    else
+        return p.last_name();
 }
 
-template <>
-decltype(auto) get<1>(const Person& p)
-{
-    return p.last_name();
-}
+// template <>
+// decltype(auto) get<0>(const Person& p)
+// {
+//     return p.first_name();
+// }
+
+// template <>
+// decltype(auto) get<1>(const Person& p)
+// {
+//     return p.last_name();
+// }
 
 TEST_CASE("sb for custom types")
 {
@@ -270,9 +300,9 @@ struct Base
     int base2;
 };
 
-struct Derived  : Base
+struct Derived : Base
 {
-    void foo() {}
+    void foo() { }
 };
 
 TEST_CASE("sb & inheritance")
