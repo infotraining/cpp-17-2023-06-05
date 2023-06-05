@@ -16,7 +16,7 @@ RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends g++-12
 
-RUN vcpkg install Catch2
+RUN vcpkg install catch2
 
 RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 10
 RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 20
