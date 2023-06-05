@@ -191,4 +191,91 @@ TEST_CASE("use case")
     }
 }
 
+//////////////////////////////////////////////////////////////////////////
+// tuple protocol
 
+class Person
+{
+    std::string first_name_;
+    std::string last_name_;
+    int age_;
+    
+public:
+    Person(std::string fn, std::string ln, int age) : first_name_{std::move(fn)}, last_name_{std::move(ln)}, age_{age}
+    {}
+
+    const std::string& first_name() const
+    {
+        return first_name_;
+    }
+
+    const std::string& last_name() const
+    {
+        return last_name_;
+    }
+};
+
+/////////////////////////////////////////////////////
+// tuple-like protocol for Person
+
+// step 1
+template <>
+struct std::tuple_size<Person>
+{
+    static constexpr size_t value = 2;
+};
+
+// step 2
+template <size_t Index>
+struct std::tuple_element<Index, Person>
+{
+    using type = std::string;
+};
+
+// template <>
+// struct std::tuple_element<1, Person>
+// {
+//     using type = std::string;
+// };
+
+// step 3
+template <size_t Index>
+decltype(auto) get(const Person&);
+
+template <>
+decltype(auto) get<0>(const Person& p)
+{
+    return p.first_name();
+}
+
+template <>
+decltype(auto) get<1>(const Person& p)
+{
+    return p.last_name();
+}
+
+TEST_CASE("sb for custom types")
+{
+    const Person p{"Jan", "Kowalski", 33};
+
+    const auto& [first_name, last_name] = p; // now it works
+
+    CHECK(first_name == "Jan");
+    CHECK(last_name == "Kowalski");
+}
+
+struct Base
+{
+    int base1;
+    int base2;
+};
+
+struct Derived  : Base
+{
+    void foo() {}
+};
+
+TEST_CASE("sb & inheritance")
+{
+    auto [a, b] = Derived{10, 30};
+}
