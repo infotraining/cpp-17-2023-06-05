@@ -223,3 +223,15 @@ TEST_CASE("bytes")
 
     std::cout << "new_byte: " << std::to_integer<unsigned int>(new_byte) << "\n";
 }
+
+TEST_CASE("auto & {}")
+{
+    int i0(10);  // int
+    int i1{10};  // int
+
+    auto a0(10); // int
+    auto a1{10}; // int - since C++17
+
+    int tab[] = {1, 2, 3}; 
+    auto a2 = {1, 2, 3}; // // std::intializer_list<int>
+}
