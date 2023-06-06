@@ -58,6 +58,7 @@ TEST_CASE("if with mutex")
 }
 
 ///////////////////////////////////////
+// scoped locks
 
 class BankAccount
 {
