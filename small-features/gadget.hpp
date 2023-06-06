@@ -3,7 +3,7 @@
 
 class Gadget
 {
-    static int gen_id;
+    inline static int gen_id = 0; // definition
 
     int id_ = ++gen_id;
 
