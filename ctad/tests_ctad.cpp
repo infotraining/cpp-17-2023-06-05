@@ -8,6 +8,10 @@
 #include <tuple>
 #include <list>
 #include <array>
+#include <optional>
+#include <functional>
+#include <memory>
+#include <array>
 
 using namespace std;
 
