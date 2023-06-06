@@ -192,3 +192,34 @@ TEST_CASE("constexpr world")
     constexpr int x = 2;
     constexpr int my_value = anytime_foo(x);
 }
+
+enum class Coffee : uint8_t
+{
+    espresso, latte, americano
+};
+
+TEST_CASE("enum init")
+{
+    Coffee c1 = Coffee::espresso;
+
+    // since C++17
+    Coffee c2{1};
+    CHECK(c2 == Coffee::latte);
+}
+
+TEST_CASE("bytes")
+{
+    char old_byte = 42;
+
+    old_byte<<=1; // ok
+
+    std::cout << "old_byte: " << old_byte << "\n";
+
+    old_byte += 2;
+
+    std::byte new_byte{42};
+    new_byte <<= 1; // Ok
+    // new_byte += 2; // Error
+
+    std::cout << "new_byte: " << std::to_integer<unsigned int>(new_byte) << "\n";
+}
