@@ -225,3 +225,105 @@ TEST_CASE("constexpr if")
 
     std::cout << typeid(buffer).name() << "\n";
 }
+
+//////////////////////////////////////////
+// Type traits
+
+int foo(int x)
+{
+    return 42 * x;
+}
+
+// metafunction
+template <int X>
+struct Foo
+{
+    static const int value = 42 *  X;
+};
+
+// template variable
+template <int X>
+constexpr int Foo_v = Foo<X>::value;
+
+template <typename T>
+constexpr T Pi(3.141592653589);
+
+TEST_CASE("traits")
+{
+    CHECK(foo(2) == 84);
+    static_assert(Foo<2>::value == 84);
+    static_assert(Foo_v<2> == 84);
+
+    std::cout << Pi<double> << " : " << Pi<float> << "\n";
+}
+
+template <typename T>
+struct IsIntegral
+{
+    constexpr static bool value = false;
+};
+
+template <>
+struct IsIntegral<int>
+{
+    constexpr static bool value = true;
+};
+
+template <>
+struct IsIntegral<unsigned int>
+{
+    constexpr static bool value = true;
+};
+
+template <typename T>
+constexpr bool IsIntegral_v = IsIntegral<T>::value;
+
+
+//////////////////////////////////////////////////////
+// traits transforming type: int& -> int
+
+template <typename T>
+struct RemoveReference
+{
+    using type = T;
+};
+
+template <typename T>
+struct RemoveReference<T&>
+{
+    using type = T;
+};
+
+template <typename T>
+struct RemoveReference<T&&>
+{
+    using type = T;
+};
+
+template <typename T>
+using RemoveReference_t = typename RemoveReference<T>::type;
+
+TEST_CASE("IsIntegral")
+{
+    using T1 = double;
+
+    static_assert(IsIntegral<T1>::value == false);
+    static_assert(IsIntegral_v<T1> == false);
+
+    using T2 = int;
+
+    static_assert(IsIntegral<T2>::value);
+    static_assert(IsIntegral_v<T2>);
+
+    using T3 = unsigned int;
+
+    static_assert(IsIntegral<T3>::value);
+    static_assert(IsIntegral_v<T3>);
+
+    int x = 10;
+    int& ref_x = x;
+
+    static_assert(std::is_integral_v<decltype(x)>);
+    static_assert(std::is_integral_v<RemoveReference<decltype(ref_x)>::type>);
+    static_assert(std::is_integral_v<RemoveReference_t<decltype(ref_x)>>);
+}
