@@ -12,10 +12,18 @@
 
 using namespace std::literals;
 
-std::optional<int> to_int(std::string_view str)
+[[nodiscard]] std::optional<int> to_int(std::string_view str)
 {
-    // TODO 
-    return std::nullopt;
+    int result{};
+    auto start = str.data();
+    auto end = str.data() + str.size();
+
+    if (auto [end_pos, error_code] = std::from_chars(start, end, result); error_code != std::errc{} || end_pos != end)
+    {
+        return std::nullopt;
+    }
+
+    return result;
 }
 
 TEST_CASE("to_int returning optional")
