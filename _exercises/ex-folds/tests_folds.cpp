@@ -14,7 +14,11 @@ using namespace std::literals;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO
+template<typename T, typename... Ts>
+auto matches(const T& v,  const Ts&... args)
+{
+    return (... + (std::count(std::begin(v), std::end(v), args)));
+}
 
 TEST_CASE("matches - returns how many items is stored in a container")
 {
@@ -36,14 +40,13 @@ void hash_combine(size_t& seed, const T& value)
     seed ^= std::hash<T>{}(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-// template <typename TArg>
-// size_t combined_hash(const TArg& arg)
-// {
-//     size_t seed{};
-//     hash_combine(seed, arg);
-
-//     return seed;
-// }
+template <typename... TArg>
+size_t combined_hash(const TArg&... arg)
+{
+    size_t seed{};
+    (..., hash_combine(seed, arg));
+    return seed;
+}
 
 TEST_CASE("combined_hash - write a function that calculates combined hash value for a given number of arguments")
 {
@@ -70,7 +73,18 @@ public:
     }
 };
 
-// TODO
+template <typename... TArgs>
+auto make_vector(TArgs&&... args)
+{
+    using T = std::common_type_t<TArgs...>;
+    std::vector<T> vec;
+
+    vec.reserve(sizeof...(TArgs));
+
+    (..., vec.push_back(std::forward<TArgs>(args)));
+
+    return vec;
+}
 
 TEST_CASE("make_vector - create vector from a list of arguments")
 {

@@ -48,6 +48,10 @@ struct Array
     }
 };
 
+// deduction guide + variadic template
+template <typename T, typename... Ts>
+Array(T, Ts...) -> Array<T, sizeof...(Ts) + 1>;
+
 template <auto N>
 struct Value
 {
@@ -62,6 +66,7 @@ struct ValueList
 TEST_CASE("Array")
 {
     Array<int, 10> arr1 = {1, 2, 3, 4};
+    Array arr2 = {1, 2, 3, 4, 5};
 
     static_assert(Value<'c'>::value == 'c');
 
