@@ -60,6 +60,24 @@ std::string get_line()
     return "HellogdgdhfdhfdhfdhfdWorld!!!";
 }
 
+namespace Cpp20
+{
+    template <typename Iterator, typename Predicate>
+    constexpr Iterator find_if(Iterator first, Iterator last, Predicate pred)
+    {
+        while(first != last)
+        {
+            if (pred(*first))
+            {
+                return first;
+            }
+            ++first;
+        }
+
+        return last;
+    }
+}
+
 TEST_CASE("string_view - why?")
 {
     std::vector vec = {1, 2, 3, 4};
@@ -83,4 +101,8 @@ TEST_CASE("string_view - why?")
     std::sort(tokens.begin(), tokens.end());
 
     print_all(tokens, "tokens");
+
+    constexpr std::array names = { "ABC"sv, "DEF"sv, "JJJ"sv};
+
+    constexpr auto id = *Cpp20::find_if(names.begin(), names.end(), [](std::string_view sv) { return sv == "DEF"sv; });
 }
