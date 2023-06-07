@@ -4,11 +4,11 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
 #include <list>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <memory>
 
 using namespace std::literals;
 
@@ -97,7 +97,8 @@ TEST_CASE("make_vector - create vector from a list of arguments")
         static_assert(std::is_same_v<decltype(gadgets)::value_type, std::unique_ptr<Gadget>>);
 
         std::vector<std::string> ids;
-        std::transform(gadgets.begin(), gadgets.end(), back_inserter(ids), [](auto& ptr) { return ptr->id(); });
+        std::transform(gadgets.begin(), gadgets.end(), back_inserter(ids), [](auto& ptr)
+            { return ptr->id(); });
 
         REQUIRE(ids == std::vector{"a"s, "b"s, "a"s});
     }
