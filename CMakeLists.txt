@@ -42,6 +42,6 @@ add_subdirectory(variant)
 
 add_subdirectory(_exercises/ex-constexpr-if)
 add_subdirectory(_exercises/ex-ctad)
-#add_subdirectory(_exercises/ex-folds)
+add_subdirectory(_exercises/ex-folds)
 add_subdirectory(_exercises/ex-optional)
 add_subdirectory(_exercises/ex-variant)
